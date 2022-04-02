@@ -57,7 +57,7 @@ class Command:
     usage = ""
     description = ""
 
-    def __init__(self, command: str, usage: str, description: str, callback: function, enabled: bool = True):
+    def __init__(self, command: str, usage: str, description: str, callback, enabled: bool = True):
         self.command = command
         self.usage = usage
         self.description = description
@@ -96,7 +96,7 @@ class Client(discord.Client):
             args[0] = args[0].lower()
             if args[0] in Command.commands.keys() and Command.commands[args[0]].enabled:
                 if len(args) >= len(Command.commands[args[0]].usage.split(" ")):
-                    await globals().get(args[0])(msg, args[1:])
+                    await Command.commands[args[0]].callback(msg, args[1:])
                 else:
                     await send_msg(msg, "Please use `" + config["prefix"] + Command.commands[args[0]].usage + "`!", 10)
             else:
@@ -107,7 +107,7 @@ class Client(discord.Client):
 if __name__ == "__main__":
     if not os.path.exists("config.json"):
         with open("config.json", "w") as file:
-            json.dump({prefix: "-"}, file, indent=4)
+            json.dump({"prefix": "-"}, file, indent=4)
     with open("config.json", "r") as file:
         config = json.load(file)
 
